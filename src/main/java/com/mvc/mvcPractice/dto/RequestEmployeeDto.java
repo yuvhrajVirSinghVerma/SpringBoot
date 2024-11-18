@@ -1,11 +1,21 @@
 package com.mvc.mvcPractice.dto;
 
+import com.mvc.mvcPractice.CustomValidator.CustomValidatorAnnotation;
+import com.mvc.mvcPractice.CustomValidator.groups.groupA;
+import jakarta.validation.Payload;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
+class paylod implements Payload{
+
+}
 public class RequestEmployeeDto {
 
+    @CustomValidatorAnnotation(groups = groupA.class,payload = {})
     private String name;
+
     private String email;
     private int age;
     private int id;

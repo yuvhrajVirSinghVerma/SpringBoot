@@ -1,10 +1,13 @@
 package com.mvc.mvcPractice.controller;
 
+import com.mvc.mvcPractice.CustomValidator.groups.groupA;
 import com.mvc.mvcPractice.dto.RequestEmployeeDto;
 import com.mvc.mvcPractice.dto.ResponseEmployeeDto;
 import com.mvc.mvcPractice.service.EmployeeService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,13 +34,13 @@ public class EmployeeController {
     }
 
     @PostMapping(path = "/employee")
-    public ResponseEntity<String> createEmployee(@RequestBody RequestEmployeeDto emp){
+    public ResponseEntity<String> createEmployee(@RequestBody @Validated(groupA.class) RequestEmployeeDto emp){
         System.out.println("emp to create "+ emp.toString());
         return ResponseEntity.status(200).body(EmpService.CreateEmp(emp));
     }
 
     @PutMapping(path="/employee/{id}")
-    public ResponseEmployeeDto updateEmp(@RequestBody RequestEmployeeDto emp,@PathVariable int id) throws Exception {
+    public ResponseEmployeeDto updateEmp(@RequestBody @Validated RequestEmployeeDto emp, @PathVariable int id) throws Exception {
         try {
             return EmpService.updateEmp(emp,id);
         } catch (Exception e) {
@@ -46,7 +49,7 @@ public class EmployeeController {
     }
 
 
-//    REDIRECTION EXAMPLE
+//    +++++++++REDIRECTION EXAMPLE++++++++++++++
 
     @GetMapping("/OldUrl")
     public ResponseEntity oldHandler(){
