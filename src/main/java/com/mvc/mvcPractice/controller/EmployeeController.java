@@ -6,11 +6,14 @@ import com.mvc.mvcPractice.dto.ResponseEmployeeDto;
 import com.mvc.mvcPractice.service.EmployeeService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class EmployeeController {
@@ -34,9 +37,10 @@ public class EmployeeController {
     }
 
     @PostMapping(path = "/employee")
-    public ResponseEntity<String> createEmployee(@RequestBody @Validated(groupA.class) RequestEmployeeDto emp){
+    public ResponseEntity<ResponseEmployeeDto> createEmployee(@RequestBody @Valid RequestEmployeeDto emp){
         System.out.println("emp to create "+ emp.toString());
-        return ResponseEntity.status(200).body(EmpService.CreateEmp(emp));
+        Optional<ResponseEmployeeDto> resp=EmpService.CreateEmp(emp); //Optional.isEmpty() for throwing exceptions
+        return resp.map((r)->ResponseEntity.ok(r)).orElseThrow(()->new RuntimeException("error on creating employee"));
     }
 
     @PutMapping(path="/employee/{id}")

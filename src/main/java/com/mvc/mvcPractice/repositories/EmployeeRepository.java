@@ -18,10 +18,10 @@ public class EmployeeRepository {
         return e;
     }
 
-    public String CreateEmp(RequestEmployeeDto emp){
-        AllEmps.add(executeQuery(emp));
+    public EmployeeEntity CreateEmp(EmployeeEntity emp){
+        AllEmps.add(emp);
         System.out.println(AllEmps.toString());
-        return "User Created " +emp.toString();
+        return emp;
     }
 
     public List<EmployeeEntity> getAllEmps(){

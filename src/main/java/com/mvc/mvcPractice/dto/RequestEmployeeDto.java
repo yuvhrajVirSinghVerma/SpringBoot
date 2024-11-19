@@ -13,7 +13,7 @@ class paylod implements Payload{
 }
 public class RequestEmployeeDto {
 
-    @CustomValidatorAnnotation(groups = groupA.class,payload = {})
+    @CustomValidatorAnnotation
     private String name;
 
     private String email;

@@ -16,6 +16,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -76,8 +77,30 @@ public class EmployeeService {
 //        return resp;
     }
 
-    public String CreateEmp(RequestEmployeeDto emp){
-        return empRepo.CreateEmp(emp);
+    public Optional<ResponseEmployeeDto> CreateEmp(RequestEmployeeDto emp){
+        TypeMap<RequestEmployeeDto, EmployeeEntity> typeMap=mapper.getTypeMap(RequestEmployeeDto.class, EmployeeEntity.class);
+        if(typeMap==null)typeMap = mapper.createTypeMap(RequestEmployeeDto.class, EmployeeEntity.class);
+
+        typeMap.addMappings(mapper -> {
+            mapper.map(RequestEmployeeDto::getName, EmployeeEntity::setEmpName);
+            mapper.map(RequestEmployeeDto::getId, EmployeeEntity::setEmpId);
+            mapper.map(RequestEmployeeDto::getAge, EmployeeEntity::setEmpAge);
+            mapper.map(RequestEmployeeDto::getEmail, EmployeeEntity::setEmpEmail);
+        });
+
+         EmployeeEntity empCreatedRes=empRepo.CreateEmp(mapper.map(emp, EmployeeEntity.class));
+
+        TypeMap<EmployeeEntity, ResponseEmployeeDto> typeMap2=mapper.getTypeMap(EmployeeEntity.class, ResponseEmployeeDto.class);
+        if(typeMap2==null)typeMap2 = mapper.createTypeMap(EmployeeEntity.class, ResponseEmployeeDto.class);
+
+        typeMap2.addMappings(mapper -> {
+            mapper.map(EmployeeEntity::getEmpName, ResponseEmployeeDto::setEmployee_Name);
+            mapper.map(EmployeeEntity::getEmpId, ResponseEmployeeDto::setEmployee_Id);
+            mapper.map(EmployeeEntity::getEmpAge, ResponseEmployeeDto::setEmployee_Age);
+            mapper.map(EmployeeEntity::getEmpEmail, ResponseEmployeeDto::setEmployee_Email);
+        });
+
+        return Optional.ofNullable(mapper.map(empCreatedRes, ResponseEmployeeDto.class));
     }
 
     public ResponseEmployeeDto updateEmp(RequestEmployeeDto empdto, int id) throws Exception {
