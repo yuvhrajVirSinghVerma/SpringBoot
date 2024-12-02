@@ -6,7 +6,7 @@ import lombok.Data;
 public class ApiResponse<T>{
     private T data;
     private ApiError errors;
-    ApiResponse(ApiError err,T data){
+    public ApiResponse(ApiError err,T data){
         this.errors=err;
         this.data=data;
     }

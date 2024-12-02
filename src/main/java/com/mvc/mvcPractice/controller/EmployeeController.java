@@ -1,6 +1,7 @@
 package com.mvc.mvcPractice.controller;
 
 import com.mvc.mvcPractice.CustomValidator.groups.groupA;
+import com.mvc.mvcPractice.advices.ApiResponse;
 import com.mvc.mvcPractice.dto.RequestEmployeeDto;
 import com.mvc.mvcPractice.dto.ResponseEmployeeDto;
 import com.mvc.mvcPractice.service.EmployeeService;
@@ -12,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.*;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,13 +24,71 @@ public class EmployeeController {
     EmployeeService EmpService;
 
     @GetMapping(path = "/hello")
-    public String getHandler(){
-        return "Hello";
+    public ResponseEntity getHandler(){
+        ResultSetCloseConnectionDemo();
+        return new ResponseEntity<>(new ApiResponse<>(null,"hello"),HttpStatus.ACCEPTED);
+    }
+
+    private void ResultSetCloseConnectionDemo() {
+                String url = "jdbc:h2:mem:testdb";
+        String username = "sa";
+
+        // Declare connection, statement, and result set
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            // Establish a connection to the database
+            connection = DriverManager.getConnection(url, username, "");
+            System.out.println("Database connection established.");
+
+            // Create a statement object to execute a query
+            statement = connection.createStatement();
+
+            // Execute a query to get data
+            String query = "SELECT empId, empName FROM emps";
+            resultSet = statement.executeQuery(query);
+
+            // Read data from the ResultSet
+            while (resultSet.next()) {
+                int id = resultSet.getInt("empId");
+                String name = resultSet.getString("empName");
+                System.out.println("ID: " + id + ", Name: " + name);
+            }
+
+            // Close the connection (this will close the ResultSet too)
+//            connection.close();
+            System.out.println("Database connection closed.");
+
+            // Now let's try to access the ResultSet after closing the connection
+            try {
+                // Trying to access the resultSet after the connection is closed
+                resultSet.next();  // This will throw an exception
+            } catch (SQLException e) {
+                System.out.println("Exception occurred: " + e.getMessage());
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Clean up resources (if still open)
+            try {
+                if (resultSet != null && !resultSet.isClosed()) {
+                    resultSet.close();
+                }
+                if (statement != null && !statement.isClosed()) {
+                    statement.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @GetMapping(path = "/employees/{id}")
     public ResponseEmployeeDto getEmp(@PathVariable(name = "id") int empId){
-        return EmpService.getEmpData(new RequestEmployeeDto(empId,"email.com","name",21));
+        return EmpService.getEmpData(empId);
     }
 
     @GetMapping(path="/allEmployees")

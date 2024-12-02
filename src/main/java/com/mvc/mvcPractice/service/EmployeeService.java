@@ -4,13 +4,16 @@ import com.mvc.mvcPractice.ModleMapperConfig.ModelMapperConfig;
 import com.mvc.mvcPractice.dto.RequestEmployeeDto;
 import com.mvc.mvcPractice.dto.ResponseEmployeeDto;
 import com.mvc.mvcPractice.entities.EmployeeEntity;
+import com.mvc.mvcPractice.entities.JpaTestEntity;
 import com.mvc.mvcPractice.repositories.EmployeeRepository;
+import com.mvc.mvcPractice.repositories.JpaTestRepo;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.modelmapper.TypeMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.web.client.ResourceAccessException;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -24,6 +27,9 @@ public class EmployeeService {
 
     @Autowired
     EmployeeRepository empRepo;
+
+    @Autowired
+    JpaTestRepo jpatestrep;
 
     @Autowired
     ModelMapper mapper;
@@ -49,10 +55,10 @@ public class EmployeeService {
 
     }
 
-    public ResponseEmployeeDto getEmpData(RequestEmployeeDto emp){
+    public ResponseEmployeeDto getEmpData(int id){
         //sending dto to repository
-        EmployeeEntity employee= empRepo.getEmpfromDb(emp);
-
+        EmployeeEntity employee= empRepo.findById(id);
+        if(employee==null)throw new ResourceAccessException("Resource Not Found");
         //process logic
 
         //mapping entity to responseDto
@@ -89,7 +95,6 @@ public class EmployeeService {
         });
 
          EmployeeEntity empCreatedRes=empRepo.CreateEmp(mapper.map(emp, EmployeeEntity.class));
-
         TypeMap<EmployeeEntity, ResponseEmployeeDto> typeMap2=mapper.getTypeMap(EmployeeEntity.class, ResponseEmployeeDto.class);
         if(typeMap2==null)typeMap2 = mapper.createTypeMap(EmployeeEntity.class, ResponseEmployeeDto.class);
 
