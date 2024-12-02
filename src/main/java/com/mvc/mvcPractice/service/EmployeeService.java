@@ -11,6 +11,9 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.modelmapper.TypeMap;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.client.ResourceAccessException;
@@ -157,5 +160,17 @@ public class EmployeeService {
         return mapper.map(emp, ResponseEmployeeDto.class);
 
 
+    }
+
+    public List<JpaTestEntity> getOrderedList(String sortBy) {
+        return jpatestrep.findBy(Sort.by(sortBy));
+    }
+
+    public List<JpaTestEntity> getPaginatedList(int pageNo) {
+        Pageable pg= PageRequest.of(pageNo,5);
+
+        System.out.println("pageable ++++++ "+pg);
+        jpatestrep.findAll(pg);
+        return jpatestrep.findAll(pg).getContent();
     }
 }

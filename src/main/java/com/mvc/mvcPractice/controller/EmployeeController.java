@@ -4,6 +4,7 @@ import com.mvc.mvcPractice.CustomValidator.groups.groupA;
 import com.mvc.mvcPractice.advices.ApiResponse;
 import com.mvc.mvcPractice.dto.RequestEmployeeDto;
 import com.mvc.mvcPractice.dto.ResponseEmployeeDto;
+import com.mvc.mvcPractice.entities.JpaTestEntity;
 import com.mvc.mvcPractice.service.EmployeeService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,4 +127,14 @@ public class EmployeeController {
         return ResponseEntity.status(200).body("Welcome");
     }
 
+
+    @GetMapping("/getOrderedList")
+    public List<JpaTestEntity> getOrdered(@RequestParam (defaultValue = "id") String sortBy){
+        return EmpService.getOrderedList(sortBy);
+    }
+
+    @GetMapping("/getPaginatedList")
+    public List<JpaTestEntity> getPaginatedList(@RequestParam (defaultValue = "0") int pageNo){
+        return EmpService.getPaginatedList(pageNo);
+    }
 }
